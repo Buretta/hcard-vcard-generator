@@ -1,0 +1,35 @@
+Plugin Name: hCard & vCard Generator
+
+Description: Given a user ID, this plugin will generate appropriate hCard and 
+vCard formats for inserting into pages wherever you like.
+
+Author: Josh Kohlbach
+Author URI: http://codemyownroad.com
+Plugin URI: http://codemyownroad.com/hcard-vcard-generator-wordpress-plugin
+Version: 1.0
+
+
+Examples of format outputs:
+---------------------------
+
+vCard Format:
+
+BEGIN:VCARD
+VERSION:3.0
+N:Gump;Forrest
+FN:Forrest Gump
+ORG:Bubba Gump Shrimp Co.
+TITLE:Shrimp Man
+TEL;TYPE=WORK,VOICE:(111) 555-1212
+EMAIL;TYPE=PREF,INTERNET:forrestgump@example.com
+END:VCARD
+
+hCard Format:
+<div class="vcard">
+	<span class="fn">Forrest Gump</span>
+	<a class="url" href="http://example.com">http://example.com</a>
+	<span class="tel">
+		<span class="type">Work</span>:
+		<span class="value">+1.415.555.1212</span>
+	</span>
+</div>
