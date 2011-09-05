@@ -22,32 +22,54 @@ class Widget_hCard_vCard extends WP_Widget {
 
 	function widget($args, $instance) {
 		extract( $args, EXTR_SKIP );
-
-		$args = array();
-
-		$title = $instance['title'];
 		
-		$id = get_query_var('author'); 
+		$title = $instance['title'];
+		$user = $instance['user'];
+		$display_hcard = $instance['display_hcard'] == 'checked';
+		$display_vcard = $instance['display_vcard'] == 'checked';
+		$autogen_title = $instance['autogen_title'] == 'checked';
+		
+		$id = (!empty($user) ? $user : get_the_author_meta('id')); 
 		$user_info = get_userdata($id);
 		
-		echo '<li class="widget hcard-vcard-generator-widget vcard">
-		<h2>Contact <span class="fn">' . $user_info->first_name . ' ' . 
-		$user_info->last_name . '</span></h2>
-		<br />
-		<div>' .
-		genCardFormat($id, 'hCard') . 
-		genCardFormat($id, 'vCard') .
-		'</div>
-		</li>';
+		$inline = false;
+		if ($args['inline'] == true)
+			$inline = true;
+		
+		if ($user_info) {
+				
+			echo '<' . ($inline ? 'div id="' . $args['widget_id'] . '"' : 'li') . ' class="widget hcard-vcard-generator-widget vcard">';
 			
+			if (!$autogen_title) {
+				echo (!empty($title) ? '<h2 class="hcard-vcard-title">' . $title . '</h2>' : '');
+			} else {
+				echo '<h2 class="hcard-vcard-title">Contact <span class="fn">' . $user_info->display_name . '</span></h2>';
+			}
+			
+			echo '<div>' .
+			($display_hcard ? generate_card($id, 'hCard') : '') . 
+			($display_vcard ? generate_card($id, 'vCard') : '') .
+			'</div>
+			</' . ($inline ? 'div' : 'li') . '>';
+		}
+		
 	}
 
 	function update($new_instance, $old_instance) {
+		//print_r($_POST);
+		
 		$instance = $old_instance;
 		$new_instance = (array)$new_instance;
 
-		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['title'] = (!empty($new_instance['title']) ? strip_tags($new_instance['title']) : '');
+		$instance['autogen_title'] = ($new_instance['autogen_title'] == 'on' ? 'checked' : '');
+		$instance['user'] = (is_numeric(strip_tags($new_instance['user'])) ? strip_tags($new_instance['user']) : '');
+		$instance['display_hcard'] = ($new_instance['display_hcard'] == 'on' ? 'checked' : '');
+		$instance['display_vcard'] = ($new_instance['display_vcard'] == 'on' ? 'checked' : '');
 		
+		/* echo "NEW INFO: \n\n";
+		print_r($instance);
+		exit(); */ 
 		return $instance;
 	}
 
@@ -55,10 +77,15 @@ class Widget_hCard_vCard extends WP_Widget {
 
 		//Defaults
 		$defaults = array(
-			'title' => 'Contact Information',
+			'title' => '',
+			'autogen_title' => 'checked',
+			'user' => '',
+			'display_hcard' => 'checked',
+			'display_vcard' => 'checked'
 		);
 		
 		$instance = wp_parse_args( (array)$instance, $defaults );
+		
 		echo '<p>
 			<label for="' . 
 			$this->get_field_id('title') . 
@@ -69,6 +96,52 @@ class Widget_hCard_vCard extends WP_Widget {
 			$this->get_field_name('title') . 
 			'" value="' . 
 			$instance['title'] . '" />
+			</p>
+			
+			<p>
+			<label for="' . 
+			$this->get_field_id('autogen_title') . 
+			'">Auto Generate Title?:</label>
+			<input type="checkbox" id="' . 
+			$this->get_field_id('autogen_title') . 
+			'" name="' . 
+			$this->get_field_name('autogen_title') . '"' . 
+			(!empty($instance['autogen_title']) ? ' checked="' . $instance['autogen_title'] . '"' : '') . ' />
+			<br /><span style="font-size: 8px; color: #808080; font-style: italic;">Overrides any title that you\'ve set</span>
+			</p>
+			
+			<p>
+			<label for="' . 
+			$this->get_field_id('user') . 
+			'">User ID:</label>
+			<input type="text" id="' . 
+			$this->get_field_id('user') . 
+			'" name="' . 
+			$this->get_field_name('user') . 
+			'" value="' . 
+			$instance['user'] . '" />
+			</p>
+			
+			<p>
+			<label for="' . 
+			$this->get_field_id('display_hcard') . 
+			'">Display hCard?:</label>
+			<input type="checkbox" id="' . 
+			$this->get_field_id('display_hcard') . 
+			'" name="' . 
+			$this->get_field_name('display_hcard') . '"' . 
+			(!empty($instance['display_hcard']) ? ' checked="' . $instance['display_hcard'] . '"' : '') . ' />
+			</p>
+			
+			<p>
+			<label for="' . 
+			$this->get_field_id('display_vcard') . 
+			'">Display vCard?:</label>
+			<input type="checkbox" id="' . 
+			$this->get_field_id('display_vcard') . 
+			'" name="' . 
+			$this->get_field_name('display_vcard') . '"' .  
+			(!empty($instance['display_vcard']) ? ' checked="' . $instance['display_vcard'] . '"' : '') . ' />
 			</p>';
 		
 	}
