@@ -110,7 +110,7 @@ TITLE:' . (!empty($user_info->user_job_title) ? $user_info->user_job_title : '')
 TEL;TYPE=WORK,VOICE:' . (!empty($user_info->user_phone_work) ? $user_info->user_phone_work : '') . '
 TEL;TYPE=CELL,VOICE:' . (!empty($user_info->user_phone_mobile) ? $user_info->user_phone_mobile : '') . '
 EMAIL;TYPE=PREF,INTERNET:' . (!empty($user_info->user_email) ? $user_info->user_email : '') . '
-ADR:TYPE=WORK,POSTAL:;' . (!empty($user_info->user_street_address_line_1) ? $user_info->user_street_address_line_1 : '') . ';' . 
+ADR:' . (!empty($user_info->user_street_address_line_1) ? $user_info->user_street_address_line_1 : '') . ';' . 
 (!empty($user_info->user_street_address_line_2) ? $user_info->user_street_address_line_2 : '') . ';' .
 (!empty($user_info->user_locality) ? $user_info->user_locality : '') . ';' .
 (!empty($user_info->user_region) ? $user_info->user_region : '') . ';' .
